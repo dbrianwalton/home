@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>French Noun Drill</title>
+<title>French Vocab Drill</title>
 <style>
   body { font-family: Arial; max-width: 600px; margin: 40px auto; }
   h1 { font-size: 22px; }
@@ -16,6 +16,11 @@
 <body>
 
 <h1>French Vocabulary Drill</h1>
+
+<select id="dataset" onchange="loadWords()">
+  <option value="base_words.json">Base Words</option>
+  <option value="gospel_phrases.json">Gospel Phrases</option>
+</select>
 
 <div class="prompt" id="prompt"></div>
 
@@ -32,7 +37,9 @@ let words = [];
 let current = null;
 
 async function loadWords() {
-  const response = await fetch("gospel_phrases.json");
+  const file = document.getElementById("dataset").value;
+
+  const response = await fetch(file);
   const data = await response.json();
 
   words = data.map((item, i) => ({
@@ -44,6 +51,7 @@ async function loadWords() {
 
   nextWord();
 }
+
 
 
 // Normalize helper
@@ -94,7 +102,7 @@ function checkAnswer() {
 }
 
 
-loadWords();
+window.onload = loadWords;
 
 function handleKey(event) {
   if (event.key === "Enter") {
