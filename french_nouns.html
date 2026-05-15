@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>French Noun Drill</title>
+<style>
+  body { font-family: Arial; max-width: 600px; margin: 40px auto; }
+  h1 { font-size: 22px; }
+  .prompt { font-size: 28px; margin: 20px 0; }
+  input { font-size: 20px; padding: 8px; width: 100%; }
+  button { margin-top: 10px; padding: 10px; font-size: 16px; }
+  .result { margin-top: 15px; font-weight: bold; }
+  .alt { color: #555; font-size: 14px; margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<h1>French Vocabulary Drill</h1>
+
+<div class="prompt" id="prompt"></div>
+
+<input id="answer" placeholder="Type answer with article..." onkeydown="handleKey(event)" />
+<button onclick="checkAnswer()">Check</button>
+
+<div class="result" id="result"></div>
+<div class="alt" id="alts"></div>
+
+<script>
+
+// DATASET (expandable to 1000 easily)
+let words = [];
+let current = null;
+
+async function loadWords() {
+  const response = await fetch("gospel_phrases.json");
+  const data = await response.json();
+
+  words = data.map((item, i) => ({
+    id: i,
+    en: item.en,
+    fr: item.fr,
+    correct: 0
+  }));
+
+  nextWord();
+}
+
+
+// Normalize helper
+function normalize(str) {
+  return str.toLowerCase()
+            .trim()
+            .replace(/’/g, "'"); // normalize apostrophes
+}
+
+
+function nextWord() {
+  document.getElementById("answer").value = "";
+  document.getElementById("result").textContent = "";
+  document.getElementById("alts").textContent = "";
+
+  current = words[Math.floor(Math.random() * words.length)];
+  document.getElementById("prompt").textContent = current.en;
+}
+
+function checkAnswer() {
+  const user = normalize(document.getElementById("answer").value);
+  const correctAnswers = current.fr.map(normalize);
+
+  const resultEl = document.getElementById("result");
+  const altEl = document.getElementById("alts");
+
+  const isCorrect = correctAnswers.includes(user);
+  const hasMultiple = current.fr.length > 1;
+
+  if (isCorrect) {
+    resultEl.textContent = "✅ Correct";
+
+    // Show alternatives if multiple answers exist
+    if (hasMultiple) {
+      altEl.textContent = "Also: " + current.fr.join(" / ");
+    } else {
+      altEl.textContent = "";
+    }
+  } else {
+    resultEl.textContent = "❌ Incorrect";
+    altEl.textContent = "✅ " + current.fr.join(" / ");
+  }
+
+  // Longer delay if showing multiple answers
+  const delay = (isCorrect && hasMultiple) || !isCorrect ? 2200 : 1200;
+
+  setTimeout(nextWord, delay);
+}
+
+
+loadWords();
+
+function handleKey(event) {
+  if (event.key === "Enter") {
+    checkAnswer();
+  }
+}
+</script>
+
+</body>
+</html>
