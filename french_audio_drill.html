@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>French Audio Drill</title>
+<style>
+  :root {
+    color-scheme: light dark;
+  }
+  body {
+    font-family: -apple-system, Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 20px 60px;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  label { font-size: 15px; }
+  select, input[type="number"] {
+    font-size: 16px;
+    padding: 6px;
+  }
+  input[type="range"] { width: 160px; }
+
+  .big-buttons { display: flex; gap: 10px; margin: 18px 0; }
+  button {
+    flex: 1;
+    padding: 16px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+  #startBtn { background: #2e7d32; color: white; }
+  #stopBtn { background: #b71c1c; color: white; }
+  #skipBtn { background: #555; color: white; }
+  button:disabled { opacity: 0.4; cursor: default; }
+
+  .status {
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 10px 0;
+    background: #eee;
+  }
+  .status.listening { background: #fff3cd; }
+  .status.speaking { background: #d1e7ff; }
+  .status.idle { background: #eee; }
+
+  .prompt {
+    font-size: 26px;
+    text-align: center;
+    margin: 24px 0 8px;
+    min-height: 40px;
+  }
+  .answer {
+    font-size: 20px;
+    text-align: center;
+    color: #2e7d32;
+    min-height: 30px;
+    margin-bottom: 10px;
+  }
+
+  .meter-wrap {
+    position: relative;
+    height: 22px;
+    background: #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 6px 0 2px;
+  }
+  .meter-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background: #4caf50;
+    transition: width 60ms linear;
+  }
+  .meter-threshold {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: #b71c1c;
+  }
+
+  .settings {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 20px;
+  }
+  .settings summary {
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .hint { font-size: 12px; color: #777; margin-top: 4px; }
+  .wakelock-note { font-size: 12px; color: #a15c00; margin-top: 14px; }
+  .error { color: #b71c1c; font-size: 14px; margin-top: 10px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+
+<h1>French Audio Drill</h1>
+<div class="subtitle">Hands-free listening practice &mdash; round one just shows you the answer, it doesn't grade you. (<a href="french_vocab_drill.html">Switch to typed version</a>)</div>
+
+<div class="row">
+  <label for="dataset">Dataset</label>
+  <select id="dataset">
+    <option value="base_words.json">Base Words</option>
+    <option value="gospel_phrases.json">Gospel Phrases</option>
+    <option value="verb_conjugations.json">Verb Conjugations</option>
+  </select>
+</div>
+
+<div class="big-buttons">
+  <button id="startBtn">Start</button>
+  <button id="skipBtn" disabled>I'm done talking</button>
+  <button id="stopBtn" disabled>Stop</button>
+</div>
+
+<div class="status idle" id="status">Tap Start to begin</div>
+
+<div class="prompt" id="prompt">&mdash;</div>
+<div class="answer" id="answer"></div>
+
+<div class="meter-wrap" id="meterWrap" style="display:none;">
+  <div class="meter-fill" id="meterFill"></div>
+  <div class="meter-threshold" id="meterThreshold"></div>
+</div>
+<div class="hint" id="meterHint" style="display:none;">Mic level (red line = speech threshold)</div>
+
+<div class="error" id="error"></div>
+
+<details class="settings" open>
+  <summary>Timing &amp; sensitivity</summary>
+
+  <div class="row">
+    <label for="silence">Pause before "done talking"</label>
+    <input type="number" id="silence" min="0.3" max="6" step="0.1" value="1.5" style="width: 70px;">
+    <span>sec</span>
+  </div>
+  <div class="hint">How long you can go quiet before the app assumes you've finished your answer and plays the correct French. Raise this if it's cutting you off mid-word; lower it to move faster.</div>
+
+  <div class="row" style="margin-top:14px;">
+    <label for="threshold">Mic sensitivity</label>
+    <input type="range" id="threshold" min="1" max="40" value="8">
+  </div>
+  <div class="hint">Lower = picks up quieter speech (but also more background noise). Watch the meter above while talking and set the red line just under your normal speaking volume.</div>
+
+  <div class="row" style="margin-top:14px;">
+    <label for="maxListen">Max listening time</label>
+    <input type="number" id="maxListen" min="3" max="30" step="1" value="12" style="width: 70px;">
+    <span>sec</span>
+  </div>
+  <div class="hint">Safety cap &mdash; if nothing is heard at all (mic too quiet, or you stay silent), the app moves on after this long instead of waiting forever.</div>
+
+  <div class="row" style="margin-top:14px;">
+    <label for="gap">Gap after answer</label>
+    <input type="number" id="gap" min="0" max="6" step="0.5" value="1.5" style="width: 70px;">
+    <span>sec</span>
+  </div>
+  <div class="hint">Pause after the French answer is spoken, before the next prompt starts.</div>
+</details>
+
+<div class="wakelock-note" id="wakelockNote"></div>
+
+<script>
+const els = {
+  dataset: document.getElementById('dataset'),
+  startBtn: document.getElementById('startBtn'),
+  skipBtn: document.getElementById('skipBtn'),
+  stopBtn: document.getElementById('stopBtn'),
+  status: document.getElementById('status'),
+  prompt: document.getElementById('prompt'),
+  answer: document.getElementById('answer'),
+  meterWrap: document.getElementById('meterWrap'),
+  meterFill: document.getElementById('meterFill'),
+  meterThreshold: document.getElementById('meterThreshold'),
+  meterHint: document.getElementById('meterHint'),
+  error: document.getElementById('error'),
+  silence: document.getElementById('silence'),
+  threshold: document.getElementById('threshold'),
+  maxListen: document.getElementById('maxListen'),
+  gap: document.getElementById('gap'),
+  wakelockNote: document.getElementById('wakelockNote'),
+};
+
+let words = [];
+let running = false;
+let wakeLock = null;
+let audioCtx = null;
+let analyser = null;
+let micStream = null;
+let skipResolver = null; // resolves the current "listening" wait early when Skip is tapped
+let sessionToken = 0; // bumps on Stop so in-flight async loops abandon themselves
+
+function setStatus(text, cls) {
+  els.status.textContent = text;
+  els.status.className = 'status ' + (cls || 'idle');
+}
+
+function showError(msg) {
+  els.error.textContent = msg;
+}
+
+// ---------- Data loading ----------
+
+async function loadWords() {
+  const file = els.dataset.value;
+  const response = await fetch(file);
+  const data = await response.json();
+  words = data.map((item, i) => ({ id: i, en: item.en, fr: item.fr }));
+}
+
+function pickWord() {
+  return words[Math.floor(Math.random() * words.length)];
+}
+
+// ---------- Speech synthesis ----------
+
+function pickVoice(lang) {
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v => v.lang === lang) || voices.find(v => v.lang && v.lang.startsWith(lang.slice(0, 2)));
+}
+
+function speak(text, lang) {
+  return new Promise((resolve) => {
+    if (!('speechSynthesis' in window)) { resolve(); return; }
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    const voice = pickVoice(lang);
+    if (voice) utter.voice = voice;
+    utter.onend = resolve;
+    utter.onerror = resolve; // never hang the loop on a TTS error
+    speechSynthesis.speak(utter);
+  });
+}
+
+// Chrome (esp. Android) has a known bug where speechSynthesis silently stops
+// firing after long idle periods. Nudging pause/resume periodically works
+// around it without any visible effect when things are already working.
+let ttsHeartbeat = null;
+function startTtsHeartbeat() {
+  stopTtsHeartbeat();
+  ttsHeartbeat = setInterval(() => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.pause();
+      speechSynthesis.resume();
+    }
+  }, 8000);
+}
+function stopTtsHeartbeat() {
+  if (ttsHeartbeat) clearInterval(ttsHeartbeat);
+  ttsHeartbeat = null;
+}
+
+// ---------- Microphone / volume-based silence detection ----------
+
+async function ensureMic() {
+  if (micStream) return;
+  micStream = await navigator.mediaDevices.getUserMedia({
+    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+  });
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioCtx.createMediaStreamSource(micStream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 1024;
+  source.connect(analyser);
+}
+
+function releaseMic() {
+  if (micStream) {
+    micStream.getTracks().forEach(t => t.stop());
+    micStream = null;
+  }
+  if (audioCtx) {
+    audioCtx.close().catch(() => {});
+    audioCtx = null;
+  }
+  analyser = null;
+}
+
+// Returns current mic level as 0-100.
+function currentLevel() {
+  if (!analyser) return 0;
+  const data = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(data);
+  let sumSquares = 0;
+  for (let i = 0; i < data.length; i++) {
+    const v = (data[i] - 128) / 128;
+    sumSquares += v * v;
+  }
+  const rms = Math.sqrt(sumSquares / data.length);
+  return Math.min(100, rms * 100 * 4); // scaled to make the meter/slider usable
+}
+
+// Waits until: mic level crosses threshold at least once, THEN stays below
+// threshold for `silenceMs`. Resolves early if skip is tapped. Always
+// resolves (never rejects) after `maxMs` even if nothing was heard.
+function listenForSilence({ thresholdGetter, silenceMsGetter, maxMs, token }) {
+  return new Promise((resolve) => {
+    const start = performance.now();
+    let hasStartedSpeaking = false;
+    let lastAboveThreshold = start;
+    let rafId = null;
+    let resolved = false;
+
+    skipResolver = () => finish();
+
+    function finish() {
+      if (resolved) return;
+      resolved = true;
+      skipResolver = null;
+      if (rafId) cancelAnimationFrame(rafId);
+      resolve();
+    }
+
+    function tick() {
+      if (token !== sessionToken) { finish(); return; }
+      const now = performance.now();
+      const level = currentLevel();
+      const threshold = thresholdGetter();
+
+      els.meterFill.style.width = Math.min(100, level) + '%';
+      els.meterThreshold.style.left = Math.min(100, threshold) + '%';
+
+      if (level > threshold) {
+        hasStartedSpeaking = true;
+        lastAboveThreshold = now;
+      }
+
+      if (hasStartedSpeaking && (now - lastAboveThreshold) > silenceMsGetter() * 1000) {
+        finish();
+        return;
+      }
+      if ((now - start) > maxMs) {
+        finish();
+        return;
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+    rafId = requestAnimationFrame(tick);
+  });
+}
+
+// ---------- Wake lock ----------
+
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator)) {
+    els.wakelockNote.textContent = 'Screen Wake Lock isn’t supported in this browser — the screen may dim/lock during practice.';
+    return;
+  }
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    els.wakelockNote.textContent = 'Screen will stay on during practice. Note: this only prevents auto-sleep — it does NOT let practice continue if you manually lock the phone or switch apps; the browser tab must stay open and visible.';
+    wakeLock.addEventListener('release', () => {
+      wakeLock = null;
+    });
+  } catch (err) {
+    els.wakelockNote.textContent = 'Could not get a screen wake lock (' + err.message + '). The screen may dim/lock during practice.';
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().catch(() => {});
+    wakeLock = null;
+  }
+}
+
+document.addEventListener('visibilitychange', async () => {
+  if (running && document.visibilityState === 'visible' && !wakeLock) {
+    await requestWakeLock();
+  }
+});
+
+// ---------- Main loop ----------
+
+async function runLoop(token) {
+  while (running && token === sessionToken) {
+    const item = pickWord();
+
+    els.answer.textContent = '';
+    els.prompt.textContent = item.en;
+    setStatus('Speaking prompt…', 'speaking');
+    await speak(item.en, 'en-US');
+    if (token !== sessionToken) return;
+
+    setStatus('Listening… speak your answer', 'listening');
+    els.skipBtn.disabled = false;
+    await listenForSilence({
+      thresholdGetter: () => Number(els.threshold.value),
+      silenceMsGetter: () => Number(els.silence.value),
+      maxMs: Number(els.maxListen.value) * 1000,
+      token,
+    });
+    els.skipBtn.disabled = true;
+    if (token !== sessionToken) return;
+
+    const answerText = item.fr.join(', ou ');
+    els.answer.textContent = answerText;
+    setStatus('Answer', 'speaking');
+    await speak(answerText, 'fr-FR');
+    if (token !== sessionToken) return;
+
+    const gapMs = Number(els.gap.value) * 1000;
+    await new Promise(r => setTimeout(r, gapMs));
+  }
+}
+
+// ---------- Controls ----------
+
+els.startBtn.addEventListener('click', async () => {
+  showError('');
+  try {
+    els.startBtn.disabled = true;
+    setStatus('Starting…', 'idle');
+
+    await loadWords();
+    if (!words.length) throw new Error('No entries found in ' + els.dataset.value);
+
+    await ensureMic();
+    await requestWakeLock();
+    startTtsHeartbeat();
+
+    els.meterWrap.style.display = 'block';
+    els.meterHint.style.display = 'block';
+    els.dataset.disabled = true;
+    els.stopBtn.disabled = false;
+
+    running = true;
+    sessionToken++;
+    runLoop(sessionToken);
+  } catch (err) {
+    showError('Could not start: ' + err.message + '\n\nMake sure this page is loaded over https:// (or localhost) and you allow microphone access when prompted.');
+    els.startBtn.disabled = false;
+  }
+});
+
+els.skipBtn.addEventListener('click', () => {
+  if (skipResolver) skipResolver();
+});
+
+els.stopBtn.addEventListener('click', () => {
+  running = false;
+  sessionToken++;
+  speechSynthesis.cancel();
+  stopTtsHeartbeat();
+  releaseMic();
+  releaseWakeLock();
+
+  els.startBtn.disabled = false;
+  els.skipBtn.disabled = true;
+  els.stopBtn.disabled = true;
+  els.dataset.disabled = false;
+  els.meterWrap.style.display = 'none';
+  els.meterHint.style.display = 'none';
+  setStatus('Stopped', 'idle');
+  els.prompt.textContent = '—';
+  els.answer.textContent = '';
+});
+
+// Warm up the voice list (Chrome loads it asynchronously).
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+</script>
+
+</body>
+</html>
