@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, Arial, sans-serif;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+
+  .group { margin-bottom: 32px; }
+  .group-title {
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  .card {
+    display: block;
+    padding: 16px 18px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .card:hover { border-color: #999; }
+  .card:active { transform: scale(0.99); }
+
+  .card-title { font-size: 17px; font-weight: 600; margin-bottom: 3px; }
+  .card-desc { font-size: 14px; color: #666; }
+
+  @media (prefers-color-scheme: dark) {
+    .card { border-color: #333; }
+    .card:hover { border-color: #555; }
+    .group-title { color: #999; }
+    .card-desc, .subtitle { color: #999; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Home</h1>
+<div class="subtitle">Personal tools &mdash; tap a card to open.</div>
+
+<div class="group">
+  <div class="group-title">French</div>
+  <a class="card" href="french/french_vocab_drill.html">
+    <div class="card-title">French Vocabulary Drill</div>
+    <div class="card-desc">Typed practice &mdash; base words, gospel phrases, and verb conjugations.</div>
+  </a>
+  <a class="card" href="french/french_audio_drill.html">
+    <div class="card-title">French Audio Drill</div>
+    <div class="card-desc">Hands-free listening practice &mdash; speaks the prompt, listens for your answer, reads the correct French aloud.</div>
+  </a>
+</div>
+
+<div class="group">
+  <div class="group-title">Church</div>
+  <a class="card" href="church/hymns-cross-reference.html">
+    <div class="card-title">Hymn Cross-References</div>
+    <div class="card-desc">Look up hymns and cross-references.</div>
+  </a>
+</div>
+
+<div class="group">
+  <div class="group-title">Games</div>
+  <a class="card" href="scorekeeper/index.html">
+    <div class="card-title">Score Keeper</div>
+    <div class="card-desc">Track players, game setup, and turn-by-turn scoring.</div>
+  </a>
+</div>
+
+</body>
+</html>

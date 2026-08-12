@@ -171,6 +171,13 @@
     <span>sec</span>
   </div>
   <div class="hint">Pause after the French answer is spoken, before the next prompt starts.</div>
+
+  <div class="row" style="margin-top:14px;">
+    <label for="settle">Settle time before listening</label>
+    <input type="number" id="settle" min="0" max="2" step="0.1" value="0.5" style="width: 70px;">
+    <span>sec</span>
+  </div>
+  <div class="hint">Short pause after the English prompt finishes, before the mic starts counting speech. Raise this if the app hears its own prompt's echo and answers instantly without you saying anything.</div>
 </details>
 
 <div class="wakelock-note" id="wakelockNote"></div>
@@ -193,8 +200,18 @@ const els = {
   threshold: document.getElementById('threshold'),
   maxListen: document.getElementById('maxListen'),
   gap: document.getElementById('gap'),
+  settle: document.getElementById('settle'),
   wakelockNote: document.getElementById('wakelockNote'),
 };
+
+// Reads a numeric settings field, falling back to a safe default if the
+// field is temporarily empty/invalid (e.g. mid-edit on a mobile keyboard).
+// Without this, an empty field reads as NaN, and any comparison against NaN
+// is always false — silently disabling whichever timeout depends on it.
+function numOr(el, fallback) {
+  const v = Number(el.value);
+  return Number.isFinite(v) && v >= 0 ? v : fallback;
+}
 
 let words = [];
 let running = false;
@@ -234,35 +251,31 @@ function pickVoice(lang) {
   return voices.find(v => v.lang === lang) || voices.find(v => v.lang && v.lang.startsWith(lang.slice(0, 2)));
 }
 
-function speak(text, lang) {
+// Speaks `text`, retrying once on error before giving up. Errors are shown
+// in the on-page error area instead of being swallowed, so a TTS failure is
+// visible instead of looking like a silently-skipped answer.
+function speak(text, lang, isRetry) {
   return new Promise((resolve) => {
     if (!('speechSynthesis' in window)) { resolve(); return; }
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = lang;
     const voice = pickVoice(lang);
     if (voice) utter.voice = voice;
-    utter.onend = resolve;
-    utter.onerror = resolve; // never hang the loop on a TTS error
+    utter.onend = () => resolve();
+    utter.onerror = (e) => {
+      const reason = (e && e.error) || 'unknown';
+      console.warn('speechSynthesis error:', reason, 'for text:', text);
+      if (!isRetry) {
+        // Most TTS errors here are transient (queue got interrupted/canceled),
+        // so give it one more try after a brief pause rather than skipping silently.
+        setTimeout(() => speak(text, lang, true).then(resolve), 300);
+      } else {
+        showError('Text-to-speech failed for "' + text + '" (' + reason + '). Continuing to the next item.');
+        resolve();
+      }
+    };
     speechSynthesis.speak(utter);
   });
-}
-
-// Chrome (esp. Android) has a known bug where speechSynthesis silently stops
-// firing after long idle periods. Nudging pause/resume periodically works
-// around it without any visible effect when things are already working.
-let ttsHeartbeat = null;
-function startTtsHeartbeat() {
-  stopTtsHeartbeat();
-  ttsHeartbeat = setInterval(() => {
-    if (speechSynthesis.speaking) {
-      speechSynthesis.pause();
-      speechSynthesis.resume();
-    }
-  }, 8000);
-}
-function stopTtsHeartbeat() {
-  if (ttsHeartbeat) clearInterval(ttsHeartbeat);
-  ttsHeartbeat = null;
 }
 
 // ---------- Microphone / volume-based silence detection ----------
@@ -277,6 +290,16 @@ async function ensureMic() {
   analyser = audioCtx.createAnalyser();
   analyser.fftSize = 1024;
   source.connect(analyser);
+
+  // If the OS/browser yanks mic access away mid-session (permission revoked,
+  // device disconnected, another app takes it), surface it instead of
+  // freezing silently, and unstick any in-progress listen.
+  micStream.getAudioTracks().forEach(track => {
+    track.onended = () => {
+      showError('Microphone access was lost. Tap Stop, then Start again.');
+      if (skipResolver) skipResolver();
+    };
+  });
 }
 
 function releaseMic() {
@@ -305,15 +328,30 @@ function currentLevel() {
   return Math.min(100, rms * 100 * 4); // scaled to make the meter/slider usable
 }
 
-// Waits until: mic level crosses threshold at least once, THEN stays below
-// threshold for `silenceMs`. Resolves early if skip is tapped. Always
-// resolves (never rejects) after `maxMs` even if nothing was heard.
+// Minimum time the level must stay continuously above threshold before we
+// count it as "you started speaking" (rather than a single noisy sample —
+// an echo tail, a click, a pop). Without this, one loud frame is enough to
+// mark speech as started, and if it's a brief blip that fades right away,
+// the silence timer completes almost immediately.
+const MIN_SPEECH_MS = 180;
+
+// Waits until: mic level crosses threshold and stays there for MIN_SPEECH_MS
+// (i.e. you actually started talking), THEN stays below threshold for
+// `silenceMs`. Resolves early if skip is tapped. Always resolves (never
+// rejects) after `maxMs` even if nothing was heard.
+//
+// Uses setInterval rather than requestAnimationFrame: rAF stops firing
+// entirely while the page is hidden (screen locked, app switched away),
+// which would freeze this Promise forever with no way to recover. A polling
+// interval keeps running (throttled, but not stopped) in that situation, so
+// the silence/max-listen checks below still eventually fire.
 function listenForSilence({ thresholdGetter, silenceMsGetter, maxMs, token }) {
   return new Promise((resolve) => {
     const start = performance.now();
     let hasStartedSpeaking = false;
+    let aboveThresholdSince = null;
     let lastAboveThreshold = start;
-    let rafId = null;
+    let intervalId = null;
     let resolved = false;
 
     skipResolver = () => finish();
@@ -322,12 +360,20 @@ function listenForSilence({ thresholdGetter, silenceMsGetter, maxMs, token }) {
       if (resolved) return;
       resolved = true;
       skipResolver = null;
-      if (rafId) cancelAnimationFrame(rafId);
+      if (intervalId) clearInterval(intervalId);
       resolve();
     }
 
     function tick() {
       if (token !== sessionToken) { finish(); return; }
+
+      // Recover from the browser auto-suspending the AudioContext (common
+      // after backgrounding); otherwise the analyser just returns stale data
+      // forever and this never notices real speech again.
+      if (audioCtx && audioCtx.state !== 'running') {
+        audioCtx.resume().catch(() => {});
+      }
+
       const now = performance.now();
       const level = currentLevel();
       const threshold = thresholdGetter();
@@ -336,8 +382,13 @@ function listenForSilence({ thresholdGetter, silenceMsGetter, maxMs, token }) {
       els.meterThreshold.style.left = Math.min(100, threshold) + '%';
 
       if (level > threshold) {
-        hasStartedSpeaking = true;
+        if (aboveThresholdSince === null) aboveThresholdSince = now;
         lastAboveThreshold = now;
+        if (!hasStartedSpeaking && (now - aboveThresholdSince) >= MIN_SPEECH_MS) {
+          hasStartedSpeaking = true;
+        }
+      } else {
+        aboveThresholdSince = null; // require a continuous run, not cumulative
       }
 
       if (hasStartedSpeaking && (now - lastAboveThreshold) > silenceMsGetter() * 1000) {
@@ -348,9 +399,9 @@ function listenForSilence({ thresholdGetter, silenceMsGetter, maxMs, token }) {
         finish();
         return;
       }
-      rafId = requestAnimationFrame(tick);
     }
-    rafId = requestAnimationFrame(tick);
+    intervalId = setInterval(tick, 100);
+    tick();
   });
 }
 
@@ -380,9 +431,18 @@ function releaseWakeLock() {
 }
 
 document.addEventListener('visibilitychange', async () => {
-  if (running && document.visibilityState === 'visible' && !wakeLock) {
-    await requestWakeLock();
+  if (!running) return;
+  if (document.visibilityState !== 'visible') return;
+
+  if (!wakeLock) await requestWakeLock();
+  if (audioCtx && audioCtx.state !== 'running') {
+    audioCtx.resume().catch(() => {});
   }
+  // Belt-and-suspenders recovery: whatever caused a stall while the page was
+  // hidden (rAF-class throttling, a suspended AudioContext, a muted mic
+  // track), don't trust it — just end the current listening phase now that
+  // we're back, the same way tapping "I'm done talking" would.
+  if (skipResolver) skipResolver();
 });
 
 // ---------- Main loop ----------
@@ -397,12 +457,22 @@ async function runLoop(token) {
     await speak(item.en, 'en-US');
     if (token !== sessionToken) return;
 
+    // Brief settle pause so the mic isn't immediately fed the tail/echo of
+    // the prompt that was just played through the speaker — without this,
+    // that echo alone can be enough to satisfy the speech threshold and
+    // "answer" the question before you've said anything.
+    const settleMs = numOr(els.settle, 0.5) * 1000;
+    if (settleMs > 0) {
+      await new Promise(r => setTimeout(r, settleMs));
+      if (token !== sessionToken) return;
+    }
+
     setStatus('Listening… speak your answer', 'listening');
     els.skipBtn.disabled = false;
     await listenForSilence({
-      thresholdGetter: () => Number(els.threshold.value),
-      silenceMsGetter: () => Number(els.silence.value),
-      maxMs: Number(els.maxListen.value) * 1000,
+      thresholdGetter: () => numOr(els.threshold, 8),
+      silenceMsGetter: () => numOr(els.silence, 1.5),
+      maxMs: numOr(els.maxListen, 12) * 1000,
       token,
     });
     els.skipBtn.disabled = true;
@@ -414,7 +484,7 @@ async function runLoop(token) {
     await speak(answerText, 'fr-FR');
     if (token !== sessionToken) return;
 
-    const gapMs = Number(els.gap.value) * 1000;
+    const gapMs = numOr(els.gap, 1.5) * 1000;
     await new Promise(r => setTimeout(r, gapMs));
   }
 }
@@ -432,7 +502,6 @@ els.startBtn.addEventListener('click', async () => {
 
     await ensureMic();
     await requestWakeLock();
-    startTtsHeartbeat();
 
     els.meterWrap.style.display = 'block';
     els.meterHint.style.display = 'block';
@@ -456,7 +525,6 @@ els.stopBtn.addEventListener('click', () => {
   running = false;
   sessionToken++;
   speechSynthesis.cancel();
-  stopTtsHeartbeat();
   releaseMic();
   releaseWakeLock();
 
