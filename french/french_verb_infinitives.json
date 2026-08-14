@@ -1,0 +1,1202 @@
+[
+  {
+    "en": "to be",
+    "fr": [
+      "être"
+    ]
+  },
+  {
+    "en": "to have",
+    "fr": [
+      "avoir"
+    ]
+  },
+  {
+    "en": "to go",
+    "fr": [
+      "aller"
+    ]
+  },
+  {
+    "en": "to do / to make",
+    "fr": [
+      "faire"
+    ]
+  },
+  {
+    "en": "to say / to tell",
+    "fr": [
+      "dire"
+    ]
+  },
+  {
+    "en": "to be able to (can)",
+    "fr": [
+      "pouvoir"
+    ]
+  },
+  {
+    "en": "to want",
+    "fr": [
+      "vouloir"
+    ]
+  },
+  {
+    "en": "to come",
+    "fr": [
+      "venir"
+    ]
+  },
+  {
+    "en": "to have to (must)",
+    "fr": [
+      "devoir"
+    ]
+  },
+  {
+    "en": "to take",
+    "fr": [
+      "prendre"
+    ]
+  },
+  {
+    "en": "to see",
+    "fr": [
+      "voir"
+    ]
+  },
+  {
+    "en": "to know (a fact)",
+    "fr": [
+      "savoir"
+    ]
+  },
+  {
+    "en": "to know (a person or place)",
+    "fr": [
+      "connaître"
+    ]
+  },
+  {
+    "en": "to put / to place",
+    "fr": [
+      "mettre"
+    ]
+  },
+  {
+    "en": "to leave",
+    "fr": [
+      "partir"
+    ]
+  },
+  {
+    "en": "to go out",
+    "fr": [
+      "sortir"
+    ]
+  },
+  {
+    "en": "to sleep",
+    "fr": [
+      "dormir"
+    ]
+  },
+  {
+    "en": "to write",
+    "fr": [
+      "écrire"
+    ]
+  },
+  {
+    "en": "to read",
+    "fr": [
+      "lire"
+    ]
+  },
+  {
+    "en": "to drink",
+    "fr": [
+      "boire"
+    ]
+  },
+  {
+    "en": "to believe",
+    "fr": [
+      "croire"
+    ]
+  },
+  {
+    "en": "to live (be alive)",
+    "fr": [
+      "vivre"
+    ]
+  },
+  {
+    "en": "to follow",
+    "fr": [
+      "suivre"
+    ]
+  },
+  {
+    "en": "to run",
+    "fr": [
+      "courir"
+    ]
+  },
+  {
+    "en": "to hold",
+    "fr": [
+      "tenir"
+    ]
+  },
+  {
+    "en": "to receive",
+    "fr": [
+      "recevoir"
+    ]
+  },
+  {
+    "en": "to open",
+    "fr": [
+      "ouvrir"
+    ]
+  },
+  {
+    "en": "to offer",
+    "fr": [
+      "offrir"
+    ]
+  },
+  {
+    "en": "to laugh",
+    "fr": [
+      "rire"
+    ]
+  },
+  {
+    "en": "to be born",
+    "fr": [
+      "naître"
+    ]
+  },
+  {
+    "en": "to die",
+    "fr": [
+      "mourir"
+    ]
+  },
+  {
+    "en": "to speak",
+    "fr": [
+      "parler"
+    ]
+  },
+  {
+    "en": "to eat",
+    "fr": [
+      "manger"
+    ]
+  },
+  {
+    "en": "to give",
+    "fr": [
+      "donner"
+    ]
+  },
+  {
+    "en": "to love / to like",
+    "fr": [
+      "aimer"
+    ]
+  },
+  {
+    "en": "to live (in a place)",
+    "fr": [
+      "habiter"
+    ]
+  },
+  {
+    "en": "to work",
+    "fr": [
+      "travailler"
+    ]
+  },
+  {
+    "en": "to look for",
+    "fr": [
+      "chercher"
+    ]
+  },
+  {
+    "en": "to find",
+    "fr": [
+      "trouver"
+    ]
+  },
+  {
+    "en": "to think",
+    "fr": [
+      "penser"
+    ]
+  },
+  {
+    "en": "to arrive",
+    "fr": [
+      "arriver"
+    ]
+  },
+  {
+    "en": "to enter",
+    "fr": [
+      "entrer"
+    ]
+  },
+  {
+    "en": "to stay",
+    "fr": [
+      "rester"
+    ]
+  },
+  {
+    "en": "to watch / to look at",
+    "fr": [
+      "regarder"
+    ]
+  },
+  {
+    "en": "to listen (to)",
+    "fr": [
+      "écouter"
+    ]
+  },
+  {
+    "en": "to play",
+    "fr": [
+      "jouer"
+    ]
+  },
+  {
+    "en": "to study",
+    "fr": [
+      "étudier"
+    ]
+  },
+  {
+    "en": "to begin / to start",
+    "fr": [
+      "commencer"
+    ]
+  },
+  {
+    "en": "to buy",
+    "fr": [
+      "acheter"
+    ]
+  },
+  {
+    "en": "to call",
+    "fr": [
+      "appeler"
+    ]
+  },
+  {
+    "en": "to send",
+    "fr": [
+      "envoyer"
+    ]
+  },
+  {
+    "en": "to use / to employ",
+    "fr": [
+      "employer"
+    ]
+  },
+  {
+    "en": "to try",
+    "fr": [
+      "essayer"
+    ]
+  },
+  {
+    "en": "to pay",
+    "fr": [
+      "payer"
+    ]
+  },
+  {
+    "en": "to clean",
+    "fr": [
+      "nettoyer"
+    ]
+  },
+  {
+    "en": "to throw",
+    "fr": [
+      "jeter"
+    ]
+  },
+  {
+    "en": "to lift / to raise",
+    "fr": [
+      "lever"
+    ]
+  },
+  {
+    "en": "to repeat",
+    "fr": [
+      "répéter"
+    ]
+  },
+  {
+    "en": "to hope",
+    "fr": [
+      "espérer"
+    ]
+  },
+  {
+    "en": "to count",
+    "fr": [
+      "compter"
+    ]
+  },
+  {
+    "en": "to ask",
+    "fr": [
+      "demander"
+    ]
+  },
+  {
+    "en": "to answer / to respond",
+    "fr": [
+      "répondre"
+    ]
+  },
+  {
+    "en": "to wait",
+    "fr": [
+      "attendre"
+    ]
+  },
+  {
+    "en": "to hear",
+    "fr": [
+      "entendre"
+    ]
+  },
+  {
+    "en": "to sell",
+    "fr": [
+      "vendre"
+    ]
+  },
+  {
+    "en": "to go down / to get off",
+    "fr": [
+      "descendre"
+    ]
+  },
+  {
+    "en": "to lose",
+    "fr": [
+      "perdre"
+    ]
+  },
+  {
+    "en": "to give back / to return",
+    "fr": [
+      "rendre"
+    ]
+  },
+  {
+    "en": "to choose",
+    "fr": [
+      "choisir"
+    ]
+  },
+  {
+    "en": "to finish",
+    "fr": [
+      "finir"
+    ]
+  },
+  {
+    "en": "to succeed",
+    "fr": [
+      "réussir"
+    ]
+  },
+  {
+    "en": "to reflect / to think it over",
+    "fr": [
+      "réfléchir"
+    ]
+  },
+  {
+    "en": "to fill",
+    "fr": [
+      "remplir"
+    ]
+  },
+  {
+    "en": "to grow (up)",
+    "fr": [
+      "grandir"
+    ]
+  },
+  {
+    "en": "to obey",
+    "fr": [
+      "obéir"
+    ]
+  },
+  {
+    "en": "to build",
+    "fr": [
+      "construire"
+    ]
+  },
+  {
+    "en": "to drive",
+    "fr": [
+      "conduire"
+    ]
+  },
+  {
+    "en": "to translate",
+    "fr": [
+      "traduire"
+    ]
+  },
+  {
+    "en": "to produce",
+    "fr": [
+      "produire"
+    ]
+  },
+  {
+    "en": "to please",
+    "fr": [
+      "plaire"
+    ]
+  },
+  {
+    "en": "to appear / to seem",
+    "fr": [
+      "paraître"
+    ]
+  },
+  {
+    "en": "to learn",
+    "fr": [
+      "apprendre"
+    ]
+  },
+  {
+    "en": "to understand",
+    "fr": [
+      "comprendre"
+    ]
+  },
+  {
+    "en": "to come back",
+    "fr": [
+      "revenir"
+    ]
+  },
+  {
+    "en": "to become",
+    "fr": [
+      "devenir"
+    ]
+  },
+  {
+    "en": "to promise",
+    "fr": [
+      "promettre"
+    ]
+  },
+  {
+    "en": "to permit / to allow",
+    "fr": [
+      "permettre"
+    ]
+  },
+  {
+    "en": "to beat / to hit",
+    "fr": [
+      "battre"
+    ]
+  },
+  {
+    "en": "to recognize",
+    "fr": [
+      "reconnaître"
+    ]
+  },
+  {
+    "en": "to feel / to smell",
+    "fr": [
+      "sentir"
+    ]
+  },
+  {
+    "en": "to serve",
+    "fr": [
+      "servir"
+    ]
+  },
+  {
+    "en": "to smile",
+    "fr": [
+      "sourire"
+    ]
+  },
+  {
+    "en": "to describe",
+    "fr": [
+      "décrire"
+    ]
+  },
+  {
+    "en": "to draw",
+    "fr": [
+      "dessiner"
+    ]
+  },
+  {
+    "en": "to sing",
+    "fr": [
+      "chanter"
+    ]
+  },
+  {
+    "en": "to dance",
+    "fr": [
+      "danser"
+    ]
+  },
+  {
+    "en": "to travel",
+    "fr": [
+      "voyager"
+    ]
+  },
+  {
+    "en": "to visit (a place)",
+    "fr": [
+      "visiter"
+    ]
+  },
+  {
+    "en": "to prepare",
+    "fr": [
+      "préparer"
+    ]
+  },
+  {
+    "en": "to wash",
+    "fr": [
+      "laver"
+    ]
+  },
+  {
+    "en": "to be necessary",
+    "fr": [
+      "falloir"
+    ]
+  },
+  {
+    "en": "to pass / to go by / to cross",
+    "fr": [
+      "passer"
+    ]
+  },
+  {
+    "en": "to leave / to let",
+    "fr": [
+      "laisser"
+    ]
+  },
+  {
+    "en": "to stop",
+    "fr": [
+      "arrêter"
+    ]
+  },
+  {
+    "en": "to help",
+    "fr": [
+      "aider"
+    ]
+  },
+  {
+    "en": "to go home / to get in",
+    "fr": [
+      "rentrer"
+    ]
+  },
+  {
+    "en": "to forget",
+    "fr": [
+      "oublier"
+    ]
+  },
+  {
+    "en": "to pull / to draw",
+    "fr": [
+      "tirer"
+    ]
+  },
+  {
+    "en": "to change",
+    "fr": [
+      "changer"
+    ]
+  },
+  {
+    "en": "to excuse / to forgive",
+    "fr": [
+      "excuser"
+    ]
+  },
+  {
+    "en": "to occupy",
+    "fr": [
+      "occuper"
+    ]
+  },
+  {
+    "en": "to walk",
+    "fr": [
+      "marcher"
+    ]
+  },
+  {
+    "en": "to keep / to look after",
+    "fr": [
+      "garder"
+    ]
+  },
+  {
+    "en": "to show / to point out",
+    "fr": [
+      "montrer"
+    ]
+  },
+  {
+    "en": "to sit down",
+    "fr": [
+      "asseoir"
+    ]
+  },
+  {
+    "en": "to carry / to wear",
+    "fr": [
+      "porter"
+    ]
+  },
+  {
+    "en": "to pray",
+    "fr": [
+      "prier"
+    ]
+  },
+  {
+    "en": "to find / to meet",
+    "fr": [
+      "retrouver"
+    ]
+  },
+  {
+    "en": "to win / to earn",
+    "fr": [
+      "gagner"
+    ]
+  },
+  {
+    "en": "to remind / to call back",
+    "fr": [
+      "rappeler"
+    ]
+  },
+  {
+    "en": "to go up / to rise",
+    "fr": [
+      "monter"
+    ]
+  },
+  {
+    "en": "to leave / to depart",
+    "fr": [
+      "quitter"
+    ]
+  },
+  {
+    "en": "to take along",
+    "fr": [
+      "emmener"
+    ]
+  },
+  {
+    "en": "to touch",
+    "fr": [
+      "toucher"
+    ]
+  },
+  {
+    "en": "to continue",
+    "fr": [
+      "continuer"
+    ]
+  },
+  {
+    "en": "to tell",
+    "fr": [
+      "raconter"
+    ]
+  },
+  {
+    "en": "to save",
+    "fr": [
+      "sauver"
+    ]
+  },
+  {
+    "en": "to meet / to encounter",
+    "fr": [
+      "rencontrer"
+    ]
+  },
+  {
+    "en": "to close / to shut",
+    "fr": [
+      "fermer"
+    ]
+  },
+  {
+    "en": "to be worth",
+    "fr": [
+      "valoir"
+    ]
+  },
+  {
+    "en": "to move",
+    "fr": [
+      "bouger"
+    ]
+  },
+  {
+    "en": "to bring",
+    "fr": [
+      "apporter"
+    ]
+  },
+  {
+    "en": "to decide",
+    "fr": [
+      "décider"
+    ]
+  },
+  {
+    "en": "to explain",
+    "fr": [
+      "expliquer"
+    ]
+  },
+  {
+    "en": "to act / to behave",
+    "fr": [
+      "agir"
+    ]
+  },
+  {
+    "en": "to adore / to love",
+    "fr": [
+      "adorer"
+    ]
+  },
+  {
+    "en": "to use",
+    "fr": [
+      "utiliser"
+    ]
+  },
+  {
+    "en": "to put to bed / to lay down",
+    "fr": [
+      "coucher"
+    ]
+  },
+  {
+    "en": "to prefer",
+    "fr": [
+      "préférer"
+    ]
+  },
+  {
+    "en": "to introduce / to present",
+    "fr": [
+      "présenter"
+    ]
+  },
+  {
+    "en": "to accept",
+    "fr": [
+      "accepter"
+    ]
+  },
+  {
+    "en": "to refuse / to turn down",
+    "fr": [
+      "refuser"
+    ]
+  },
+  {
+    "en": "to end / to finish",
+    "fr": [
+      "terminer"
+    ]
+  },
+  {
+    "en": "to amuse / to entertain",
+    "fr": [
+      "amuser"
+    ]
+  },
+  {
+    "en": "to interest",
+    "fr": [
+      "intéresser"
+    ]
+  },
+  {
+    "en": "to forgive / to pardon",
+    "fr": [
+      "pardonner"
+    ]
+  },
+  {
+    "en": "to kiss / to embrace",
+    "fr": [
+      "embrasser"
+    ]
+  },
+  {
+    "en": "to hate / to detest",
+    "fr": [
+      "détester"
+    ]
+  },
+  {
+    "en": "to keep / to maintain",
+    "fr": [
+      "maintenir"
+    ]
+  },
+  {
+    "en": "to suppose / to assume",
+    "fr": [
+      "supposer"
+    ]
+  },
+  {
+    "en": "to marry",
+    "fr": [
+      "épouser"
+    ]
+  },
+  {
+    "en": "to approach",
+    "fr": [
+      "approcher"
+    ]
+  },
+  {
+    "en": "to fear / to be afraid of",
+    "fr": [
+      "craindre"
+    ]
+  },
+  {
+    "en": "to shout",
+    "fr": [
+      "crier"
+    ]
+  },
+  {
+    "en": "to invite",
+    "fr": [
+      "inviter"
+    ]
+  },
+  {
+    "en": "to arrange / to organize",
+    "fr": [
+      "arranger"
+    ]
+  },
+  {
+    "en": "to thank",
+    "fr": [
+      "remercier"
+    ]
+  },
+  {
+    "en": "to sign",
+    "fr": [
+      "signer"
+    ]
+  },
+  {
+    "en": "to go with / to accompany",
+    "fr": [
+      "accompagner"
+    ]
+  },
+  {
+    "en": "to dare",
+    "fr": [
+      "oser"
+    ]
+  },
+  {
+    "en": "to cancel",
+    "fr": [
+      "annuler"
+    ]
+  },
+  {
+    "en": "to complain",
+    "fr": [
+      "se plaindre"
+    ]
+  },
+  {
+    "en": "to hurt",
+    "fr": [
+      "faire du mal"
+    ]
+  },
+  {
+    "en": "to need",
+    "fr": [
+      "avoir besoin"
+    ]
+  },
+  {
+    "en": "to spell",
+    "fr": [
+      "épeler"
+    ]
+  },
+  {
+    "en": "to turn off",
+    "fr": [
+      "éteindre"
+    ]
+  },
+  {
+    "en": "to turn on",
+    "fr": [
+      "allumer"
+    ]
+  },
+  {
+    "en": "to wake up",
+    "fr": [
+      "se réveiller"
+    ]
+  },
+  {
+    "en": "to add",
+    "fr": [
+      "ajouter"
+    ]
+  },
+  {
+    "en": "to taste",
+    "fr": [
+      "goûter"
+    ]
+  },
+  {
+    "en": "to cost",
+    "fr": [
+      "coûter"
+    ]
+  },
+  {
+    "en": "to cook",
+    "fr": [
+      "cuire"
+    ]
+  },
+  {
+    "en": "to erase",
+    "fr": [
+      "effacer"
+    ]
+  },
+  {
+    "en": "to teach",
+    "fr": [
+      "enseigner"
+    ]
+  },
+  {
+    "en": "to write down / to note",
+    "fr": [
+      "noter"
+    ]
+  },
+  {
+    "en": "to replace",
+    "fr": [
+      "remplacer"
+    ]
+  },
+  {
+    "en": "to wish",
+    "fr": [
+      "souhaiter"
+    ]
+  },
+  {
+    "en": "to fall",
+    "fr": [
+      "tomber"
+    ]
+  },
+  {
+    "en": "to cheer / to acclaim",
+    "fr": [
+      "acclamer"
+    ]
+  },
+  {
+    "en": "to grant / to admit",
+    "fr": [
+      "accorder"
+    ]
+  },
+  {
+    "en": "to hurry / to rush over",
+    "fr": [
+      "accourir"
+    ]
+  },
+  {
+    "en": "to hang (up)",
+    "fr": [
+      "accrocher"
+    ]
+  },
+  {
+    "en": "to welcome",
+    "fr": [
+      "accueillir"
+    ]
+  },
+  {
+    "en": "to acquire",
+    "fr": [
+      "acquérir"
+    ]
+  },
+  {
+    "en": "to appoint",
+    "fr": [
+      "adjoindre"
+    ]
+  },
+  {
+    "en": "to admire",
+    "fr": [
+      "admirer"
+    ]
+  },
+  {
+    "en": "to announce",
+    "fr": [
+      "annoncer"
+    ]
+  },
+  {
+    "en": "to pull up / out",
+    "fr": [
+      "arracher"
+    ]
+  },
+  {
+    "en": "to increase",
+    "fr": [
+      "augmenter"
+    ]
+  },
+  {
+    "en": "to be right",
+    "fr": [
+      "avoir raison"
+    ]
+  },
+  {
+    "en": "to joke",
+    "fr": [
+      "blaguer"
+    ]
+  },
+  {
+    "en": "to chat / to cause",
+    "fr": [
+      "causer"
+    ]
+  },
+  {
+    "en": "to walk on / to make one's way",
+    "fr": [
+      "cheminer"
+    ]
+  },
+  {
+    "en": "to confuse",
+    "fr": [
+      "confondre"
+    ]
+  },
+  {
+    "en": "to advise / to recommend",
+    "fr": [
+      "conseiller"
+    ]
+  },
+  {
+    "en": "to spend",
+    "fr": [
+      "dépenser"
+    ]
+  },
+  {
+    "en": "to borrow",
+    "fr": [
+      "emprunter"
+    ]
+  },
+  {
+    "en": "to put to sleep",
+    "fr": [
+      "endormir"
+    ]
+  },
+  {
+    "en": "to avoid",
+    "fr": [
+      "éviter"
+    ]
+  },
+  {
+    "en": "to congratulate",
+    "fr": [
+      "féliciter"
+    ]
+  }
+]

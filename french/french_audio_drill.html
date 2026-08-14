@@ -120,6 +120,7 @@
     <option value="base_words.json">Base Words</option>
     <option value="gospel_phrases.json">Gospel Phrases</option>
     <option value="verb_conjugations.json">Verb Conjugations</option>
+    <option value="french_verb_infinitives.json">Verb Infinitives</option>
   </select>
 </div>
 
@@ -178,6 +179,18 @@
     <span>sec</span>
   </div>
   <div class="hint">Short pause after the English prompt finishes, before the mic starts counting speech. Raise this if the app hears its own prompt's echo and answers instantly without you saying anything.</div>
+
+  <div class="row" style="margin-top:14px;">
+    <label for="decay">Repetition decay</label>
+    <input type="range" id="decay" min="0" max="0.95" step="0.05" value="0.65">
+  </div>
+  <div class="hint">Words you've been prompted with more often (relative to your least-practiced word) become less likely to come up again. Lower = strongly favors the words you've seen the fewest times; closer to 1 = closer to picking evenly at random. Counts are saved on this device per dataset.</div>
+
+  <div class="row" style="margin-top:14px;">
+    <label>Practice counts</label>
+    <button id="resetCountsBtn" type="button" style="flex:0 0 auto;padding:8px 14px;font-size:14px;border-radius:8px;border:1px solid #999;background:transparent;">Reset for this dataset</button>
+  </div>
+  <div class="hint" id="resetCountsHint">Clears the "times prompted" tally for the dataset currently selected above.</div>
 </details>
 
 <div class="wakelock-note" id="wakelockNote"></div>
@@ -201,6 +214,8 @@ const els = {
   maxListen: document.getElementById('maxListen'),
   gap: document.getElementById('gap'),
   settle: document.getElementById('settle'),
+  decay: document.getElementById('decay'),
+  resetCountsBtn: document.getElementById('resetCountsBtn'),
   wakelockNote: document.getElementById('wakelockNote'),
 };
 
@@ -214,6 +229,8 @@ function numOr(el, fallback) {
 }
 
 let words = [];
+let counts = {}; // wordKey -> number of times prompted, for the current dataset
+let currentDatasetFile = null;
 let running = false;
 let wakeLock = null;
 let audioCtx = null;
@@ -238,10 +255,89 @@ async function loadWords() {
   const response = await fetch(file);
   const data = await response.json();
   words = data.map((item, i) => ({ id: i, en: item.en, fr: item.fr }));
+  currentDatasetFile = file;
+  counts = loadCounts(file);
 }
 
+// ---------- Practice-count tracking (spaced repetition) ----------
+//
+// Every time an entry is prompted we bump its count and persist it to
+// localStorage, keyed per-dataset, so the weighting survives across
+// sessions/reloads (not just in-memory for the current run).
+
+function countsStorageKey(file) {
+  return 'frenchAudioDrillCounts::' + file;
+}
+
+function loadCounts(file) {
+  try {
+    const raw = localStorage.getItem(countsStorageKey(file));
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.warn('Could not read practice counts from local storage:', e);
+    return {};
+  }
+}
+
+function saveCounts(file, data) {
+  try {
+    localStorage.setItem(countsStorageKey(file), JSON.stringify(data));
+  } catch (e) {
+    console.warn('Could not save practice counts to local storage:', e);
+  }
+}
+
+// Identifies an entry stably across reloads even though array order/index
+// could shift if the dataset file is edited later.
+function wordKey(item) {
+  return item.en + '⟩' + item.fr.join('/');
+}
+
+function countFor(item) {
+  return counts[wordKey(item)] || 0;
+}
+
+function currentMinCount() {
+  if (!words.length) return 0;
+  let min = Infinity;
+  for (const w of words) {
+    const c = countFor(w);
+    if (c < min) min = c;
+  }
+  return min === Infinity ? 0 : min;
+}
+
+// Records that `item` was just prompted and persists the updated tally.
+function recordPrompt(item) {
+  const key = wordKey(item);
+  counts[key] = (counts[key] || 0) + 1;
+  saveCounts(currentDatasetFile, counts);
+}
+
+// Picks the next word via rejection sampling: draw a uniformly random entry,
+// then accept it with probability decayRate^(its count - the current
+// minimum count). An entry tied for the fewest reps is always accepted
+// (decayRate^0 = 1); each rep beyond the minimum multiplies its odds of
+// acceptance by decayRate, so heavily-repeated entries fade out without
+// ever being fully excluded. If nothing gets accepted after many tries
+// (e.g. decay set very low with a small deck), fall back to an entry
+// currently at the minimum count so we never hang.
 function pickWord() {
-  return words[Math.floor(Math.random() * words.length)];
+  const decayRate = numOr(els.decay, 0.65);
+  const minCount = currentMinCount();
+  const MAX_ATTEMPTS = 500;
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const candidate = words[Math.floor(Math.random() * words.length)];
+    const diff = countFor(candidate) - minCount;
+    const acceptProb = Math.pow(decayRate, diff);
+    if (Math.random() < acceptProb) {
+      return candidate;
+    }
+  }
+
+  const atMinimum = words.filter(w => countFor(w) === minCount);
+  return atMinimum[Math.floor(Math.random() * atMinimum.length)];
 }
 
 // ---------- Speech synthesis ----------
@@ -450,6 +546,7 @@ document.addEventListener('visibilitychange', async () => {
 async function runLoop(token) {
   while (running && token === sessionToken) {
     const item = pickWord();
+    recordPrompt(item);
 
     els.answer.textContent = '';
     els.prompt.textContent = item.en;
@@ -519,6 +616,18 @@ els.startBtn.addEventListener('click', async () => {
 
 els.skipBtn.addEventListener('click', () => {
   if (skipResolver) skipResolver();
+});
+
+els.resetCountsBtn.addEventListener('click', () => {
+  const file = els.dataset.value;
+  const label = els.dataset.options[els.dataset.selectedIndex].text;
+  localStorage.removeItem(countsStorageKey(file));
+  if (file === currentDatasetFile) counts = {};
+
+  const hintEl = document.getElementById('resetCountsHint');
+  const original = 'Clears the "times prompted" tally for the dataset currently selected above.';
+  hintEl.textContent = 'Practice counts reset for "' + label + '".';
+  setTimeout(() => { hintEl.textContent = original; }, 2500);
 });
 
 els.stopBtn.addEventListener('click', () => {
